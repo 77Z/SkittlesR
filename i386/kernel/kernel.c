@@ -8,7 +8,7 @@
 #include "../modules/uname.h"
 
 void reset_view() { kprint("\n# "); }
-void halt_cpu() { asm("hlt"); }
+void halt_cpu() { log_serial("Stopping SkittlesR\n"); asm("hlt"); }
 
 void kernel_main() {
 	kprint("Driver Ready: Screen\n");
@@ -19,12 +19,19 @@ void kernel_main() {
 	kprint("Driver Ready: Keyboard\n");
 
 	kprint("Writing Boot Message to Serial\n");
-	write_serial_str("Hello Serial from SkittlesR "VERSION); // THIS WORKS WOOOHOOOOO
+	write_serial_str("Hello Serial from SkittlesR "VERSION"\n");
 
 	kprint("Loading SkittlesR Kernel Version "VERSION"\n");
 
 
 	reset_view();
+}
+
+void BUGCHECK(char *cause) {
+	error_serial("BUGCHECK: ");
+	write_serial_str(cause);
+	write_serial_str("\n");
+	asm("hlt");
 }
 
 void user_input(char *input) {
@@ -40,9 +47,11 @@ void user_input(char *input) {
 	} else if (strcmp(input, "clear") == 0) {
 		clear_screen();
 		reset_view();
+	} else if (strcmp(input, "BUGCHECK") == 0) {
+		BUGCHECK("USER_ISSUED_BUGCHECK");
 	} else if (strcmp(input, "help") == 0) {
 		kprint("List of all commands/modules:\n");
-		kprint("System: END, clear, help\n");
+		kprint("System: END, clear, help, BUGCHECK\n");
 		kprint("Kernel Modules: ");
 		for (unsigned int i = 0; i < sizeof Modules / sizeof Modules[0]; i++) {
 			kprint(Modules[i]);

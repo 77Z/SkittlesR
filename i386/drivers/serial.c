@@ -52,3 +52,18 @@ void write_serial_str(char *message) {
 		write_serial(message[i++]);
 	}
 }
+
+void log_serial(char *message) {
+	write_serial_str("\e[34m{ LOG }\e[0m ");
+	write_serial_str(message);
+}
+
+void warn_serial(char *message) {
+	write_serial_str("\e[1;33m{ WARN }\e[0m ");
+	write_serial_str(message);
+}
+
+void error_serial(char *message) {
+	write_serial_str("\e[31m{ ERROR }\e[0m ");
+	write_serial_str(message);
+}
